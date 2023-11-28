@@ -5,17 +5,17 @@ import pandas as pd
 
 
 def format_forecast_table(hornsea_features, solar_features):
-    latest_forcast_table = hornsea_features.merge(
+    table = hornsea_features.merge(
         solar_features, how="outer", on=["ref_datetime", "valid_datetime"]
     )
-    latest_forcast_table = (
-        latest_forcast_table.set_index("valid_datetime")
+    table = (
+        table.set_index("valid_datetime")
         .resample("30T")
         .interpolate("linear", limit=5)
         .reset_index()
     )
-    latest_forcast_table.rename(columns={"WindSpeed:100": "WindSpeed"}, inplace=True)
-    pass
+    table.rename(columns={"WindSpeed:100": "WindSpeed"}, inplace=True)
+    return table
 
 
 # Convert nwp data frame to xarray

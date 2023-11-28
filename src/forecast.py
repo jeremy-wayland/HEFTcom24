@@ -2,10 +2,9 @@ import argparse
 import os
 import sys
 
+import numpy as np
 import pandas as pd
-import xarray as xr
 from dotenv import load_dotenv
-from statsmodels.iolib.smpickle import load_pickle
 
 import utils
 from loaders import get_hornsea_data, get_next_day_market_times, get_solar_data
@@ -23,7 +22,7 @@ if __name__ == "__main__":
     this = sys.modules[__name__]
     # INIT API KEY
     load_dotenv()
-    api_key = os.getenv("api_key")
+    api_key = os.getenv("rebase_api_key")
     rebase_client = RebaseAPI(api_key)
 
     # LOAD DATA
@@ -34,10 +33,9 @@ if __name__ == "__main__":
 
     # FORECASTING
     for quantile in range(10, 100, 10):
-        # TODO: Want to stick with these naming conventions?
-        # Maybe for multiple models want to specify in a params.yaml?
-        model = load_pickle(f"models/model_q{quantile}.pickle")
-        current_forecasts[f"q{quantile}"] = model.predict(current_forecasts)
+        # stub
+        current_forecasts[f"q{quantile}"] = np.inf
+        # TODO: Load trained models and predict
 
     # PREPARE SUBMISSION
     submission_data = pd.DataFrame({"datetime": get_next_day_market_times()})
