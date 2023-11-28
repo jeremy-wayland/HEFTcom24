@@ -3,9 +3,7 @@ import os
 import sys
 
 import pandas as pd
-import xarray as xr
 from dotenv import load_dotenv
-from statsmodels.iolib.smpickle import load_pickle
 
 import utils
 from loaders import get_hornsea_data, get_next_day_market_times, get_solar_data
@@ -21,34 +19,42 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     this = sys.modules[__name__]
-    # INIT API KEY
+
+    # SET ENV
     load_dotenv()
-    api_key = os.getenv("api_key")
+    root = os.getenv("root")
+    data_dir = os.path.join(root, "data/")
+
+    # INIT API KEY
+    api_key = os.getenv("rebase_api_key")
     rebase_client = RebaseAPI(api_key)
 
     # LOAD DATA
     solar = get_solar_data(rebase_client)
     hornsea = get_hornsea_data(rebase_client)
 
-    current_forecasts = utils.format_forecast_table(hornsea, solar)
+    inputs = utils.format_forecast_table(hornsea, solar)
 
     # FORECASTING
     for quantile in range(10, 100, 10):
-        # TODO: Want to stick with these naming conventions?
-        # Maybe for multiple models want to specify in a params.yaml?
-        model = load_pickle(f"models/model_q{quantile}.pickle")
-        current_forecasts[f"q{quantile}"] = model.predict(current_forecasts)
+        # Dummy:
+        inputs[f"q{quantile}"] = 0
+        # TODO: How to load models? -> save in train.py
+        # model = load_pickle(
+        #     f"{data_dir}/trained_models/{which-models}/model_q{quantile}.pickle"
+        # )
+        # inputs[f"q{quantile}"] = model.predict(inputs)
 
-    # PREPARE SUBMISSION
+    # # PREPARE SUBMISSION
     submission_data = pd.DataFrame({"datetime": get_next_day_market_times()})
     submission_data = submission_data.merge(
-        current_forecasts, how="left", left_on="datetime", right_on="valid_datetime"
+        inputs, how="left", left_on="datetime", right_on="valid_datetime"
     )
     submission_data["market_bid"] = submission_data["q50"]
 
     submission_data = utils.prep_submission_in_json_format(submission_data)
     print(submission_data)
 
-    # EXCECUTE SUBMIT
+    # # EXCECUTE SUBMIT
     if args.submit:
         rebase_client.submit(submission_data)
