@@ -1,78 +1,10 @@
+![image](https://github.com/jeremy-wayland/HEFTcom24/assets/47305172/6119a223-7af2-4047-846e-774c4d9b5122)
+
 # Hybrid Energy Forecasting and Trading Competition
+Forecasting production from wind and solar power plants, and making effective decisions under forecast uncertainty, are essential capabilities in low-carbon energy systems. This competition invites participants to develop state-of-the-art forecasting and energy trading techniques to accelerate the global transition to net-zero and to win a share of $21,000 in prize money. It aims to bridge the gap between academic and industry practice, introduce energy forecasting challenges to new communities, and promote energy analytics and data science education.
 
-This repository contains some basic utilities and an example to help teams get started with the Hybrid Energy Forecasting and Trading Competition. Full details of the competition can be found on the [IEEE DataPort](https://dx.doi.org/10.21227/5hn0-8091).
+The competition is organised by the IEEE Power and Energy Society Working Group on Energy Forecasting and Analytics and is sponsored by Ørsted, one of the world’s largest renewable energy companies, and rebase.energy, and tech start-up based in Sweden. Forecasting power production and participating in energy markets is a core part of Ørsted’s business, and an area where data and decisions science can bring great value. The competition platform developed by rebase.energy gives participants access to a wide variety of data, including weather forecasts and real electricity market data, to generate their forecasts and trading decisions.
 
-## Prepare your python environment
+The competition will run from February to April 2024, but the platform will open in advance for participants to begin developing and testing their solutions. This is a genuine forecasting task! It requires daily submissions of forecasts and market bids. Automation is strongly encouraged.
 
-This example was developed using anaconda. You can use the file `environment.yml` create an environment with the same packages and version of Python. In anaconda prompt, run
-```
-conda env create -f environment.yml
-conda activate HEFTcom24
-```
-to install all packages and dependencies, and activate the `HEFTcom24` environment.
-
-## Download data
-
-Historic data for use in the competition can be downloaded from the competition [IEEE DataPort page](https://dx.doi.org/10.21227/5hn0-8091) and should un-zipped and placed in the `data` folder.
-
-More recent data can be downloaded via the competition API, which will be necessary to generate forecasts during the evaluation phase of the competition. Teams are advised to test this functionality early and automate submissions.
-
-API documentation can be found on the rebase.energy website for [energy data](https://api.rebase.energy/challenges/redoc#tag/Data) and [weather data](https://api.rebase.energy/weather/docs/v2/), and some basic wrappers are included in `comp_utils.py`.
-
-
-## Utilities module
-
-The python module `comp_utils.py` contains some useful functions for the competition, including
-
-1. Set-up of authentication to access the competition API
-2. Wrappers for the API endpoints to download the latest data
-3. Functions to prepare and send submissions 
-
-## Getting Started Example
-
-An minimal example showing how to load and combine data, produce a forecasting model, and generate an competition submission is included in the jupyter notebook `Getting Started.ipynb`.
-
-This example only uses a subset of data provided by the competition organisers. The following files are required:
-```
-data/dwd_icon_eu_hornsea_1_20200920_20231027.nc
-data/dwd_icon_eu_pes10_20200920_20231027.nc
-data/Energy_Data_20200920_20230820.csv
-```
-
-API access is not required to get started on developing your forecasting and trading strategies using the historic data provided.
-
-### Setting up your authentication
-
-An API key will be sent to the email address used when registering for the competition on or before 14 November 2023, or withing one working day if you registered after this date. This key is linked to your team, and it is essential that you use it when submitting your entires. Do not share your API key!
-
-To run this example, your API key should be stored in a text file called `team_key.txt` in the root directory of this repository. This file is listed in `.gitignore` and is therefore ignored by git. If you change the filename, make sure you add the new name to `.gitignore`.
-
-## Submissions
-
-During the competition period, daily submissions are required. Forecasts and market bids for the day-ahead must be submitted before gate closure of the day-ahead auction at 9:20AM UTC. Hence, automation is encouraged. Submission is via push API, documentation of which is available on the [rebase.energy website](https://api.rebase.energy/challenges/redoc#tag/Challenge/operation/post_submission_challenges__challenge_id__submit_post).
-
-The python script `auto_submitter.py` provides an example of one way of setting this up. The script downloads new data, loads and runs models, and submits the resulting forecasts and market bid to the competition platform using the same approach as in `Getting Started.ipynb`. It can be run from the command line  
-```
-[...]\Getting Started> "C:\Users\[user name]\Anaconda3\envs\HEFTcom24\python.exe" auto_submitter.py
-```
-and will save a text file in the `logs/` directory containing the API response.
-
-This process can be automated in many ways, and will depend on your operating system or cloud environment.
-
-#### Windows Scheduler
-
-Create a batch file `scheduled_task.bat` containing the following text (similar to the command above)
-```
-"C:\Users\[user name]\Anaconda3\envs\comp23\python.exe"
-"[...]\Getting Started\auto_submitter.py"
-pause
-```
-Navigate to thorough Control Panel to the Task Scheduler and schedule this batch file to be run each day in time to make your submission before the 9:20AM UTC deadline.
-
-## Contributors to this repository
-
-- Jethro Browell (University of Glasgow)
-- Henrik Kälvegren (rebase.energy)
-- Klimis Stylpnopoulos (University of Glasgow)
-
-Contact: [Rebase Slack Community](join.slack.com/t/rebase-community/shared_invite/zt-1dtd0tdo6-sXuCEy~zPnvJw4uUe~tKeA)
+This competition is organised by the IEEE Power & Energy Society Working Group on Energy Forecasting and Analytics and sponsored by Ørsted and rebase.energy. The organising committee are: Jethro Browell (Chair, University of Glasgow), Sebastian Haglund (rebase.energy), Henrik Kälvegren (rebase.energy), Edoardo Simioni (Ørsted), Ricardo Bessa (INESC TEC), Yi Wang (University of Hong Kong)
