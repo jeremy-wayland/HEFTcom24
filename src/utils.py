@@ -98,3 +98,50 @@ def prep_submission_in_json_format(
     data = {"market_day": market_day.strftime("%Y-%m-%d"), "submission": submission}
 
     return data
+
+def separate_target_data(df, target_day, training_window=-1):
+    """ Separates the data in the dataframe based on training data and the data from the target day.
+
+    Parameters
+    ----------
+    df : Dataframe
+    target_day: pandas.Timestamp
+    training_window: int
+        # of days to use for training. If -1, use all.
+
+    Returns
+    -------
+    training_data : Dataframe
+        The dataframe that should be trained on.
+    target_data : Dataframe
+        The dataframe that should be used to calculate the loss.
+    """
+    # If this is uncommented, values are only on a 6 hour interval. But not sure 
+    # df = df[df['ref_datetime'] == df['valid_datetime']]
+    df = df.sort_values(by=['ref_datetime', 'valid_datetime'])
+    target = df.loc[(df['valid_datetime'] >= target_day) & (df['valid_datetime'] < target_day + pd.Timedelta(1, unit="day"))]
+    training = df[df['valid_datetime'] < target_day]
+    if training_window != -1:
+        training = training[training['valid_datetime'] >= target_day - pd.Timedelta(training_window, unit="day")]
+    return training.reset_index(), target
+
+def pinball_score(predicted_quantiles, target):
+    """ Calculates the pinball loss score for the predicted quantiles. Lower is better.
+
+    Parameters
+    ----------
+    predicted_quantiles : Dataframe
+    target: Dataframe
+    
+    Returns
+    -------
+    score : int
+    """
+    def pinball(y,q,alpha):
+        return (y-q)*alpha*(y>=q) + (q-y)*(1-alpha)*(y<q)
+    score = list()
+    for qu in range(10,100,10):
+        score.append(pinball(y=target["total_generation_MWh"],
+            q=predicted_quantiles[f"q{qu}"],
+            alpha=qu/100).mean())
+    return sum(score)/len(score)
